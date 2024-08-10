@@ -1,9 +1,9 @@
 "use client"; // Ensure this is at the top for Next.js to handle the client-side component
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
-import Track from "@/components/track/Track"
-import Login from "@/components/login/Times"
+// import Track from "@/components/track/Track"
+// import Login from "@/components/login/Times"
 
 
 
@@ -17,6 +17,42 @@ export default function ProfileUpdateForm() {
     const [errors, setErrors] = useState({});
     const [serverMessage, setServerMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+
+
+
+
+
+    useEffect(() => {
+
+        // Call the function to fetch data
+        fetchUserData();
+    }, []); // Empty dependency array means this useEffect runs once when the component mounts
+
+
+
+    // Define an async function to fetch the data
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/api/dashboard/user'); // Adjust the endpoint to your API
+            if (!response.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+            const data = await response.json();
+
+            setEmail(data?.email)
+            setName(data?.name)
+            setProfileImagePreview(data?.profileImage)
+
+
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+
+
+
+
 
     const validateForm = () => {
         const errors = {};
@@ -44,258 +80,285 @@ export default function ProfileUpdateForm() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setServerMessage('');
-        if (!validateForm()) return;
-
+    const uploadImageToCloudinary = async (image) => {
         const formData = new FormData();
-        formData.append('name', name);
-        formData.append('email', email);
-        formData.append('password', password);
-        if (profileImage) {
-            formData.append('profileImage', profileImage);
-        }
+        formData.append('file', image);
+        formData.append('upload_preset', 'ml_default'); // Replace with your Cloudinary upload preset
 
-        const response = await fetch('http://localhost:3000/api/profile', {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`, { // Replace with your Cloudinary cloud name
             method: 'POST',
             body: formData,
         });
 
         const data = await response.json();
-        if (!response?.ok) {
+        return data.secure_url; // Return the image URL
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setServerMessage('');
+        if (!validateForm()) return;
+
+        let imageUrl = '';
+        if (profileImage) {
+            imageUrl = await uploadImageToCloudinary(profileImage);
+            setIsSuccess(true);
+            setServerMessage("image upload ");
+
+        }
+
+        const requestBody = {
+            name,
+            email,
+            password,
+            profileImage: imageUrl,
+        };
+
+        const response = await fetch('http://localhost:3000/api/dashboard/user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
             setIsSuccess(false);
-            setServerMessage(data?.err);
+            setServerMessage(data.err);
         } else {
             setIsSuccess(true);
             setServerMessage(data.msg);
+            setPassword("")
+            setConfirmPassword("")
         }
     };
 
     return (
-<>
-        <Box sx={{
-            backgroundImage: 'url(/image/auth.jpg)',
+        <>
+            <Box sx={{
+                backgroundImage: 'url(/image/auth.jpg)',
 
 
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            width: '100%',
-            height: '100vh',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '20px',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                width: '100%',
+                height: '100vh',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '20px',
 
 
 
-        }}   >
+            }}   >
 
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' }, // Column layout for xs (extra small) and row layout for sm (small) and above
-                gap: 2,
-                maxWidth: 800,
-                margin: '0 auto',
-                padding: 2, // Add padding for better spacing on smaller screens
-                overflow: 'hidden',
-                
-                
-                backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                marginTop: "29px",
-                padding: '40px',
-                color: "white"
-                
-                
-                
-                 // Prevents image overflow on smaller screens
-            }}
-        >
-            <Box
-                sx={{
-                    order: { xs: 2, sm: 1 }, // Reverse order for xs and normal order for sm and above
-                    flex: { xs: 'none', sm: 1 }, // No flex for xs, 1 for sm and above
-                    textAlign: { xs: 'center', sm: 'left' }, // Center align for xs, left align for sm and above
-                }}
-            >
-                {profileImagePreview && (
-                    <Box mt={2} textAlign="center">
-                        <div className="image-container">
-                            <img src={profileImagePreview} alt="Profile Preview" className="profile-image" />
-                        </div>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' }, // Column layout for xs (extra small) and row layout for sm (small) and above
+                        gap: 2,
+                        maxWidth: 800,
+                        margin: '0 auto',
+                        padding: 2, // Add padding for better spacing on smaller screens
+                        overflow: 'hidden',
+
+
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        marginTop: "29px",
+                        padding: '40px',
+                        color: "white"
+
+
+
+                        // Prevents image overflow on smaller screens
+                    }}
+                >
+                    <Box
+                        sx={{
+                            order: { xs: 2, sm: 1 }, // Reverse order for xs and normal order for sm and above
+                            flex: { xs: 'none', sm: 1 }, // No flex for xs, 1 for sm and above
+                            textAlign: { xs: 'center', sm: 'left' }, // Center align for xs, left align for sm and above
+                        }}
+                    >
+                        {profileImagePreview && (
+                            <Box mt={2} textAlign="center">
+                                <div className="image-container">
+                                    <img src={profileImagePreview} alt="Profile Preview" className="profile-image" />
+                                </div>
+                            </Box>
+                        )}
                     </Box>
-                )}
-            </Box>
-            <Box
-                sx={{
-                    order: { xs: 1, sm: 2 }, // Reverse order for xs and normal order for sm and above
-                    flex: { xs: 1, sm: 2 }, // 1 for xs, 2 for sm and above
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                }}
-            >
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Update Profile
-                </Typography>
-                {serverMessage && (
-                    <Alert severity={isSuccess ? 'success' : 'error'}>{serverMessage}</Alert>
-                )}
-                <TextField
-                    label="Name"
-                    variant="outlined"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    error={!!errors.name}
-                    helperText={errors.name}
-                    fullWidth
-                    InputLabelProps={{
-                        style: { color: 'white' },
-                    }}
-                    InputProps={{
-                        style: {
-                            color: '#fff',
-                            borderColor: 'white',
-                        },
-                    }}
-                    sx={{
-                        input: { color: 'white' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'white',
-                            },
-                        },
-                    }}
+                    <Box
+                        sx={{
+                            order: { xs: 1, sm: 2 }, // Reverse order for xs and normal order for sm and above
+                            flex: { xs: 1, sm: 2 }, // 1 for xs, 2 for sm and above
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                        }}
+                    >
+                        <Typography variant="h4" component="h1" gutterBottom>
+                            Update Profile
+                        </Typography>
+                        {serverMessage && (
+                            <Alert severity={isSuccess ? 'success' : 'error'}>{serverMessage}</Alert>
+                        )}
+                        <TextField
+                            label="Name"
+                            variant="outlined"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            error={!!errors.name}
+                            helperText={errors.name}
+                            fullWidth
+                            InputLabelProps={{
+                                style: { color: 'white' },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: '#fff',
+                                    borderColor: 'white',
+                                },
+                            }}
+                            sx={{
+                                input: { color: 'white' },
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                },
+                            }}
 
-                />
-                <TextField
-                    label="Email"
-                    variant="outlined"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    error={!!errors.email}
-                    helperText={errors.email}
-                    fullWidth
+                        />
+                        <TextField
+                            label="Email"
+                            variant="outlined"
 
-                    InputLabelProps={{
-                        style: { color: 'white' },
-                    }}
-                    InputProps={{
-                        style: {
-                            color: '#fff',
-                            borderColor: 'white',
-                        },
-                    }}
-                    sx={{
-                        input: { color: 'white' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'white',
-                            },
-                        },
-                    }}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            error={!!errors.email}
+                            helperText={errors.email}
+                            fullWidth
 
-                />
-                <TextField
-                    label="Password"
-                    type="password"
-                    variant="outlined"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    error={!!errors.password}
-                    helperText={errors.password}
-                    fullWidth
-                    InputLabelProps={{
-                        style: { color: 'white' },
-                    }}
-                    InputProps={{
-                        style: {
-                            color: '#fff',
-                            borderColor: 'white',
-                        },
-                    }}
-                    sx={{
-                        input: { color: 'white' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'white',
-                            },
-                        },
-                    }}
-                />
-                <TextField
-                    label="Confirm Password"
-                    type="password"
-                    variant="outlined"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword}
-                    fullWidth
-                    InputLabelProps={{
-                        style: { color: 'white' },
-                    }}
-                    InputProps={{
-                        style: {
-                            color: '#fff',
-                            borderColor: 'white',
-                        },
-                    }}
-                    sx={{
-                        input: { color: 'white' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'white',
-                            },
-                        },
-                    }}
-                />
-                <Button
-                    variant="contained"
-                    component="label"
-                    fullWidth
-                >
-                    Upload Profile Image
-                    <input
-                        type="file"
-                        hidden
-                        onChange={handleImageChange}
-                    />
-                </Button>
-                <Button type="submit" 
-                variant="contained" 
-                color="primary" 
-                >
-                    Update Profile
-                </Button>
-            </Box>
-            <style jsx>{`
+                            InputLabelProps={{
+                                style: { color: 'white' },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: '#fff',
+                                    borderColor: 'white',
+                                },
+                            }}
+                            sx={{
+                                input: { color: 'white' },
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                },
+                            }}
+
+                        />
+                        <TextField
+                            label="Password"
+                            type="password"
+                            variant="outlined"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            error={!!errors.password}
+                            helperText={errors.password}
+                            fullWidth
+                            InputLabelProps={{
+                                style: { color: 'white' },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: '#fff',
+                                    borderColor: 'white',
+                                },
+                            }}
+                            sx={{
+                                input: { color: 'white' },
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                },
+                            }}
+                        />
+                        <TextField
+                            label="Confirm Password"
+                            type="password"
+                            variant="outlined"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            error={!!errors.confirmPassword}
+                            helperText={errors.confirmPassword}
+                            fullWidth
+                            InputLabelProps={{
+                                style: { color: 'white' },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: '#fff',
+                                    borderColor: 'white',
+                                },
+                            }}
+                            sx={{
+                                input: { color: 'white' },
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                },
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            component="label"
+                            fullWidth
+                        >
+                            Upload Profile Image
+                            <input
+                                type="file"
+                                hidden
+                                onChange={handleImageChange}
+                            />
+                        </Button>
+                        <Button type="submit"
+                            variant="contained"
+                            color="primary"
+                        >
+                            Update Profile
+                        </Button>
+                    </Box>
+                    <style jsx>{`
                 .image-container {
                     width: 280px;
                     height: 280px;
@@ -326,24 +389,24 @@ export default function ProfileUpdateForm() {
                     }
                 }
             `}</style>
-        </Box>
-
-
                 </Box>
-            <Box sx={{
+
+
+            </Box>
+            {/* <Box sx={{
                 backgroundImage: 'url(/image/auth.jpg)',
 
 
-             
-               
+
+
 
             }}   >
 
                 <Login />
 
-            </Box> 
+            </Box> */}
 
-            <Box sx={{
+            {/* <Box sx={{
                 backgroundImage: 'url(/image/auth.jpg)',
 
 
@@ -355,7 +418,7 @@ export default function ProfileUpdateForm() {
 
                 <Track />
 
-            </Box> 
+            </Box> */}
         </>
     );
 }
