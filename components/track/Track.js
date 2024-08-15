@@ -29,6 +29,8 @@ const DeviceDetails = () => {
         timezone: '',
     });
 
+    const navigator = navigator
+
     useEffect(() => {
         const fetchDeviceDetails = async () => {
             try {
