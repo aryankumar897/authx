@@ -30,7 +30,7 @@ export default function SignupForm() {
         setServerMessage('');
         if (!validateForm()) return;
 
-        const response = await fetch('http://localhost:3000/api/forgot-password', {
+        const response = await fetch(`${process.env.API}/forgot-password`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
