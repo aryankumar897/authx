@@ -201,8 +201,8 @@ export default function SignInForm() {
                 setIsSuccess(true);
                 setServerMessage("successfully login");
             }
-        } catch (error) {
-            console.log(error)
+        } catch (err) {
+            console.log(err)
 
             setIsSuccess(false);
             setServerMessage("something went wrong");
