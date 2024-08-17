@@ -208,8 +208,7 @@ export const authOptions = {
 
 
     },
-    debug: true,
-
+   
 }
 
 
