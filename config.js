@@ -1,6 +1,6 @@
 const DB_URI = "mongodb://127.0.0.1:27017/auth"
 
-const API = "http://localhost:3000/api"
+const API = "https://authx-mu.vercel.app/api"
 
 // GOOGLE_CLIENT_ID = your - google - client - id
 // GOOGLE_CLIENT_SECRET = your - google - client - secret
@@ -14,7 +14,7 @@ const API = "http://localhost:3000/api"
 // TWITTER_CLIENT_SECRET = your - twitter - client - secret
 // NEXTAUTH_URL = http://localhost:3000
 
-const  DOMAIN="http://localhost:3000"
+const DOMAIN ="https://authx-mu.vercel.app"
 CLOUDINARY_CLOUD_NAME = "dxhzy8hjp",
     CLOUDINARY_API_KEY = "732193517963228",
     CLOUDINARY_API_SECRET = "laHrHWwDnUr_wYP7jdsz8Z7XYyE",
