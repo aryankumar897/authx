@@ -113,20 +113,25 @@ export async function POST(req) {
 
         transporter.sendMail(mailOptions)
             .then((info) => {
-                console.log('Email sent successfully:', info.response);
-                // You can perform further actions here if needed
+              //  console.log('Email sent successfully:', info.response);
+                return NextResponse.json({ err: `User registered, activation email sent ${info.response}` }, { status: 200 });
             })
             .catch((error) => {
                 console.error('Error sending email:', error);
+               
+
+                return NextResponse.json({ err: `User registered, activation email sent ${error}` },{status:500});
+
+               
                 // Handle the error appropriately
             });
 
 
 
 
-        console.log("user saved successfully", user);
+       // console.log("user saved successfully", user);
 
-        return NextResponse.json({ msg: "User registered, activation email sent" });
+       // return NextResponse.json({ msg: "User registered, activation email sent" });
        
     } catch (err) {
         console.log(err);
