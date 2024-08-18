@@ -105,7 +105,7 @@ export async function POST(req) {
             from: 'akumar07092000@gmail.com', // mail sending service provider
 
             subject: 'Account Activation',
-            text: `Please activate your account by clicking the following link: 
+            text: `Please activate your account by clicking the following linkx: 
       ${process.env.DOMAIN}/activate/${activationToken}`,
         };
 
