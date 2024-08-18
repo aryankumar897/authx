@@ -24,6 +24,8 @@ const verifyRecaptcha = async (token, retries = 3) => {
                 body: params
             });
             const data = await response.json();
+
+             console.log("datax",data)
             if (data.success) {
                 return true;
             } else {
@@ -47,7 +49,7 @@ const transporter = nodemailer.createTransport({
     secure: true,
     auth: {
         user: 'akumar07092000@gmail.com',
-        pass: 'attluekcguytkklb',
+        pass: 'lzdndzmxpvlwtfvs',
     },
 });
 
@@ -109,9 +111,15 @@ export async function POST(req) {
 
 
 
-        await transporter.sendMail(mailOptions);
-
-
+        transporter.sendMail(mailOptions)
+            .then((info) => {
+                console.log('Email sent successfully:', info.response);
+                // You can perform further actions here if needed
+            })
+            .catch((error) => {
+                console.error('Error sending email:', error);
+                // Handle the error appropriately
+            });
 
 
 

@@ -68,3 +68,14 @@ const UserSchema = new mongoose.Schema({
 
 
 export default mongoose.models.User || mongoose.model("User", UserSchema)
+
+
+
+
+
+// gahavay527
+
+// cvyuMm21CrYgACKS
+
+
+// mongodb+srv://gahavay527:cvyuMm21CrYgACKS@cluster0.6lx9n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

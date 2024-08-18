@@ -33,7 +33,7 @@ export default function ProfileUpdateForm() {
     // Define an async function to fetch the data
     const fetchUserData = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/dashboard/user'); // Adjust the endpoint to your API
+            const response = await fetch(`${process.env.API}/dashboard/user`); // Adjust the endpoint to your API
             if (!response.ok) {
                 throw new Error('Failed to fetch user data');
             }

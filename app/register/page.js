@@ -107,7 +107,7 @@ export default function SignupForm() {
         setServerMessage('');
         if (!validateForm()) return;
         setLoading(true)
-        const response = await fetch('https://authx-mu.vercel.app/api/register', {
+        const response = await fetch(`${process.env.API}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

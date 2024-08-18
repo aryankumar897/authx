@@ -20,7 +20,7 @@ const Activate = ({ params }) => {
 
     const activateAccount = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/activate/${token}`);
+            const response = await fetch(`${process.env.API}/activate/${token}`);
             const data = await response.json();
 
             if (!response.ok) {
