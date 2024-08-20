@@ -189,10 +189,7 @@ export const authOptions = {
         },
       
       
-        redirect({ url, baseUrl }) {
-             console.log("redirect", url, baseUrl)
-            return baseUrl
-        },
+      
 
     },
 
