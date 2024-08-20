@@ -166,11 +166,6 @@ export const authOptions = {
         },
 
 
-
-
-
-
-
         jwt: async ({ token }) => {
 
             console.log("token: ", token)
@@ -183,10 +178,6 @@ export const authOptions = {
             return token
         },
 
-
-
-
-
         session: async ({ session, token }) => {
 
 
@@ -195,8 +186,12 @@ export const authOptions = {
 
             return session
 
-        }
-
+        },
+      
+      
+        redirect({ url, baseUrl }) {
+            return baseUrl
+        },
 
     },
 
