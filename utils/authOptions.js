@@ -113,8 +113,8 @@ export const authOptions = {
         // }),
 
         DiscordProvider({
-            clientId: process.env.DISCORD_CLIENT_ID,
-            clientSecret: process.env.DISCORD_CLIENT_SECRET
+            clientId: '1270802720441368596',
+            clientSecret: 'zk1xRzvjYRB3srOnN-FuMr4CpqwM3i7z'
         }),
         TwitterProvider({
             clientId: process.env.TWITTER_CLIENT_ID,
@@ -190,6 +190,7 @@ export const authOptions = {
       
       
         redirect({ url, baseUrl }) {
+             console.log("redirect", url, baseUrl)
             return baseUrl
         },
 

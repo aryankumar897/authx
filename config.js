@@ -1,11 +1,11 @@
-const DB_URI = "mongodb+srv://gahavay527:cvyuMm21CrYgACKS@cluster0.6lx9n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+//const DB_URI = "mongodb+srv://gahavay527:cvyuMm21CrYgACKS@cluster0.6lx9n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 
-//"mongodb://127.0.0.1:27017/auth"
+const DB_URI ="mongodb://127.0.0.1:27017/auth"
 
-//const API = "http://localhost:3000/api"
+const API = "http://localhost:3000/api"
 
-const API = "https://authx-mu.vercel.app/api"
+//const API = "https://authx-mu.vercel.app/api"
 
 
 
@@ -26,12 +26,14 @@ AUTH0_ISSUER = 'https://dev-ya4w05rwdbd25t32.us.auth0.com'
 
 
 
-NEXTAUTH_URL = "https://authx-mu.vercel.app"
+NEXTAUTH_URL = "http://localhost:3000"
 
-const DOMAIN = "https://authx-mu.vercel.app"
+//"https://authx-mu.vercel.app"
+
+//const DOMAIN = "https://authx-mu.vercel.app"
 
 
-//const DOMAIN = "http://localhost:3000"
+const DOMAIN = "http://localhost:3000"
 
 
 
